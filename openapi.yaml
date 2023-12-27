@@ -1,0 +1,210 @@
+openapi: 3.0.1
+info:
+  title: SSH Plugin
+  description: A plugin that allows ChatGPT to send SSH commands to a server.
+  version: 'v1'
+servers:
+  - url: https://webdav.ipooo.me/app
+paths:
+  /start:
+    post:
+      summary: Start an SSH session
+      description: Starts an SSH session using `ip`, `username`, `port` (optional, defaults to 22) and `session_id`.
+      operationId: startSshSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ip:
+                  type: string
+                username:
+                  type: string
+                port:
+                  type: integer
+                  description: The SSH port number, defaults to 22 if not specified.
+                  minimum: 1
+                  maximum: 65535
+                session_id:
+                  type: string
+      responses:
+        '200':
+          description: SSH session started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+
+  /execute:
+    post:
+      summary: Execute a command in the SSH session
+      description: Executes command, adaptively controls output scope using 'full_output'. Best for static output, avoid for dynamic/graphic ones.
+      operationId: sshCommand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session_id:
+                  type: string
+                command:
+                  type: string
+                full_output:
+                  type: boolean
+      responses:
+        '200':
+          description: SSH command executed successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: No SSH session found for this user
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Server error
+          content:
+            text/plain:
+              schema:
+                type: string
+
+
+
+  /stop:
+    post:
+      summary: End the SSH session
+      description: Stops SSH session identified by `session_id`.
+      operationId: endSshSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session_id:
+                  type: string
+      responses:
+        '200':
+          description: SSH session ended successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        '404':
+          description: No SSH session found for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Server error
+
+  /read_ssh_info:
+    get:
+      operationId: getSSHInfo
+      summary: Retrieve SSH information from a file
+      responses:
+        '200':
+          description: File content retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  file_content:
+                    type: string
+                    description: Content of the ssh.txt file
+        '500':
+          description: Error occurred while reading the file
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+  /get_output:
+    post:
+      operationId: getOutput
+      summary: Retrieve the latest output of a running command by session_id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session_id:
+                  type: string
+                  description: The session id to get the output from
+                full_output:
+                  type: boolean
+                  description: Whether to get the full output or the last 1024 characters only
+      responses:
+        '200':
+          description: Output retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  output:
+                    type: string
+                    description: The output of the command
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+        '500':
+          description: Error occurred while retrieving the output
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message

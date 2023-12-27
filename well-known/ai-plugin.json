@@ -1,0 +1,19 @@
+{
+    "schema_version": "v1",
+    "name_for_human": "SSH Command Plugin",
+    "name_for_model": "SSHGPT",
+    "description_for_human": "Plugin for managing SSH sessions and executing SSH commands.",
+    "description_for_model": "Execute a command in a given SSH session, with an optional full_output flag to control output extent: use false for large/dynamic outputs, true for key information. Avoid graphical interactive commands like nano.",
+    "auth": {
+      "type": "none"
+    },
+    "api": {
+      "type": "openapi",
+      "url": "https://webdav.ipooo.me/app/openapi.yaml",
+      "is_user_authenticated": false
+    },
+    "logo_url": "https://webdav.ipooo.me/app/logo.png",
+    "contact_email": "support@example.com",
+    "legal_info_url": "https://example.com/legal"
+}
+
